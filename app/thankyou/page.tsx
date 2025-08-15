@@ -17,6 +17,7 @@ function ThankYouContent() {
   const donorName = searchParams.get('name') || "Anonymous Donor"
   const donationAmount = searchParams.get('amount') ? `₹${searchParams.get('amount')}` : "₹1000"
   const donorEmail = searchParams.get('email') || "donor@example.com"
+  const donorContact = searchParams.get('contact') || ""
   const transactionId = searchParams.get('transactionId') || "REF-123456789"
   const wantsCertificate = searchParams.get('wantsCertificate') === 'true'
   

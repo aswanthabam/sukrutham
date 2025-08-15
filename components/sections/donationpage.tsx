@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -18,6 +19,7 @@ export default function DonationPage() {
   // Form field states
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
+  const [countryCode, setCountryCode] = useState("+91") // Default to India
   const [contact, setContact] = useState("")
   const [pan, setPan] = useState("")
   const [address, setAddress] = useState("")
@@ -29,6 +31,30 @@ export default function DonationPage() {
   // Form validation states
   const [errors, setErrors] = useState<{[key: string]: string}>({})
   const [showErrors, setShowErrors] = useState(false)
+
+  // Country codes for the dropdown
+  const countryCodes = [
+    { code: "+91", country: "India", flag: "🇮🇳" },
+    { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
+    { code: "+44", country: "UK", flag: "🇬🇧" },
+    { code: "+61", country: "Australia", flag: "🇦🇺" },
+    { code: "+65", country: "Singapore", flag: "🇸🇬" },
+    { code: "+971", country: "UAE", flag: "🇦🇪" },
+    { code: "+966", country: "Saudi Arabia", flag: "🇸🇦" },
+    { code: "+974", country: "Qatar", flag: "🇶🇦" },
+    { code: "+965", country: "Kuwait", flag: "🇰🇼" },
+    { code: "+968", country: "Oman", flag: "🇴🇲" },
+    { code: "+973", country: "Bahrain", flag: "🇧🇭" },
+    { code: "+49", country: "Germany", flag: "🇩🇪" },
+    { code: "+33", country: "France", flag: "🇫🇷" },
+    { code: "+39", country: "Italy", flag: "🇮🇹" },
+    { code: "+34", country: "Spain", flag: "🇪🇸" },
+    { code: "+81", country: "Japan", flag: "🇯🇵" },
+    { code: "+86", country: "China", flag: "🇨🇳" },
+    { code: "+82", country: "South Korea", flag: "🇰🇷" },
+    { code: "+60", country: "Malaysia", flag: "🇲🇾" },
+    { code: "+66", country: "Thailand", flag: "🇹🇭" },
+  ]
 
   const handleAmountSelect = (value: string) => {
     setAmount(value)
@@ -42,7 +68,14 @@ export default function DonationPage() {
     if (!email.trim()) newErrors.email = "Email is required"
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Please enter a valid email"
     if (!contact.trim()) newErrors.contact = "Contact number is required"
-    else if (!/^\d{10}$/.test(contact.replace(/\D/g, ''))) newErrors.contact = "Please enter a valid 10-digit contact number"
+    else {
+      // Remove spaces and hyphens for validation
+      const cleanContact = contact.replace(/[\s\-]/g, '')
+      // Basic validation - should be digits and reasonable length
+      if (!/^\d{7,15}$/.test(cleanContact)) {
+        newErrors.contact = "Please enter a valid contact number (7-15 digits)"
+      }
+    }
     if (!amount || parseFloat(amount) <= 0) newErrors.amount = "Please enter a valid donation amount"
     
     // 80G Certificate conditional validation
@@ -79,6 +112,7 @@ export default function DonationPage() {
     const params = new URLSearchParams({
       name: fullName,
       email: email,
+      contact: `${countryCode} ${contact}`,
       amount: amount,
       wantsCertificate: wantsCertificate.toString(),
       transactionId: `REF-${Date.now()}` // Generate a simple transaction ID
@@ -381,13 +415,30 @@ export default function DonationPage() {
                 <label className="text-sm font-medium mb-1 block">
                   Contact Number <span className="text-red-500">*</span>
                 </label>
-                <Input 
-                  type="tel" 
-                  placeholder="Enter your contact number" 
-                  className="bg-gray-50" 
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <Select value={countryCode} onValueChange={setCountryCode}>
+                    <SelectTrigger className="w-[140px] bg-gray-50">
+                      <SelectValue placeholder="Code" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countryCodes.map((item) => (
+                        <SelectItem key={item.code} value={item.code}>
+                          <span className="flex items-center gap-2">
+                            <span>{item.flag}</span>
+                            <span>{item.code}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input 
+                    type="tel" 
+                    placeholder="Enter your contact number" 
+                    className="bg-gray-50 flex-1" 
+                    value={contact}
+                    onChange={(e) => setContact(e.target.value)}
+                  />
+                </div>
                 {showErrors && errors.contact && (
                   <p className="text-red-500 text-sm mt-1">{errors.contact}</p>
                 )}
