@@ -212,7 +212,7 @@ export default function DonationPage() {
               </div>
 
               {/* Row 3: Large image LEFT + 4 small images RIGHT */}
-              <div className="flex flex-col sm:flex-row gap-2 lg:gap-0 h-32 sm:h-48">
+              <div className="md:flex flex-col sm:flex-row gap-2 lg:gap-0 h-32 sm:h-48 hidden">
                 {/* Left: Large image */}
                 <div className="flex-1 rounded-xl overflow-hidden relative">
                   <Image
@@ -270,7 +270,7 @@ export default function DonationPage() {
               </div>
 
               {/* Row 4: 4 small images LEFT + Large image RIGHT */}
-              <div className="flex flex-col sm:flex-row gap-2 lg:gap-0 h-32 sm:h-48">
+              <div className="hidden md:flex flex-col sm:flex-row gap-2 lg:gap-0 h-32 sm:h-48">
                 {/* Left: 2x2 grid of 4 images */}
                 <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-1 lg:gap-0 h-full">
                   <div className="rounded-xl overflow-hidden relative">
