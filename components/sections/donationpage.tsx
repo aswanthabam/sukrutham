@@ -309,7 +309,7 @@ export default function DonationPage() {
                 <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-1 lg:gap-0 h-full">
                   <div className="rounded-xl overflow-hidden relative">
                     <Image
-                      src="/images/rectangle 11.jpg"
+                      src="/images/rectangle 11.avif"
                       alt="rectangle 11"
                       width={200}
                       height={200}
@@ -319,7 +319,7 @@ export default function DonationPage() {
                   </div>
                   <div className="rounded-xl overflow-hidden relative">
                     <Image
-                      src="/images/rectangle 12.jpg"
+                      src="/images/rectangle 12.avif"
                       alt="rectangle 12"
                       width={200}
                       height={200}
@@ -329,7 +329,7 @@ export default function DonationPage() {
                   </div>
                   <div className="rounded-xl overflow-hidden relative">
                     <Image
-                      src="/images/rectangle 13.jpg"
+                      src="/images/rectangle 13.avif"
                       alt="rectangle 13"
                       width={200}
                       height={200}
@@ -339,7 +339,7 @@ export default function DonationPage() {
                   </div>
                   <div className="rounded-xl overflow-hidden relative">
                     <Image
-                      src="/images/rectangle 14.jpg"
+                      src="/images/rectangle 14.avif"
                       alt="rectangle 14"
                       width={200}
                       height={200}
@@ -477,6 +477,15 @@ export default function DonationPage() {
                     onClick={() => handleAmountSelect("10000")}
                   >
                     ₹10,000
+                  </Button>
+                   <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="rounded-full px-4 py-1 text-sm bg-transparent"
+                    onClick={() => handleAmountSelect("50000")}
+                  >
+                    ₹50,000
                   </Button>
                 </div>
               </div>
