@@ -13,6 +13,9 @@ export default function DonationPage() {
   const router = useRouter()
   const [wantsCertificate, setWantsCertificate] = useState(false)
   const [amount, setAmount] = useState("1000")
+  const [showCustomAmount, setShowCustomAmount] = useState(false)
+  const [selectedAmountPill, setSelectedAmountPill] = useState("1000")
+  const [customAmountError, setCustomAmountError] = useState("")
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [showTermsError, setShowTermsError] = useState(false)
   
@@ -58,6 +61,33 @@ export default function DonationPage() {
 
   const handleAmountSelect = (value: string) => {
     setAmount(value)
+    setSelectedAmountPill(value)
+    setShowCustomAmount(false)
+    setCustomAmountError("") // Clear custom amount error when selecting predefined amount
+  }
+
+  const handleOtherAmountClick = () => {
+    setSelectedAmountPill("other")
+    setShowCustomAmount(true)
+    setAmount("") // Clear the amount when switching to custom
+  }
+
+  const handleCustomAmountChange = (value: string) => {
+    setAmount(value)
+    
+    // Real-time validation for custom amount
+    if (value && parseFloat(value) > 0 && parseFloat(value) < 1000) {
+      setCustomAmountError("Minimum donation amount is ₹1,000")
+    } else {
+      setCustomAmountError("")
+    }
+    
+    // Clear amount error if user is typing and meets minimum requirement
+    if (value && parseFloat(value) >= 1000 && errors.amount) {
+      const newErrors = { ...errors }
+      delete newErrors.amount
+      setErrors(newErrors)
+    }
   }
 
   const validateForm = () => {
@@ -77,6 +107,7 @@ export default function DonationPage() {
       }
     }
     if (!amount || parseFloat(amount) <= 0) newErrors.amount = "Please enter a valid donation amount"
+    else if (parseFloat(amount) < 1000) newErrors.amount = "Minimum donation amount is ₹1,000"
     
     // 80G Certificate conditional validation
     if (wantsCertificate) {
@@ -446,48 +477,77 @@ export default function DonationPage() {
 
               {/* Enter Amount */}
               <div>
-                <label className="text-sm font-medium mb-1 block">
+                <label className="text-sm font-medium mb-3 block">
                   Enter Amount (in ₹) <span className="text-red-500">*</span>
                 </label>
-                <Input
-                  type="number"
-                  placeholder="Enter donation amount"
-                  className="bg-gray-50"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
+                
+                {/* Amount Pills */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {/* Default Amount Pills */}
+                  <Button
+                    type="button"
+                    variant={selectedAmountPill === "1000" ? "default" : "outline"}
+                    className={`h-12 text-sm font-medium ${
+                      selectedAmountPill === "1000" 
+                        ? "bg-primary hover:bg-teal-700 text-white border-primary" 
+                        : "bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200"
+                    }`}
+                    onClick={() => handleAmountSelect("1000")}
+                  >
+                    ₹1,000
+                  </Button>
+                  
+                 
+                  
+                  {/* Other Amount Pill */}
+                  <Button
+                    type="button"
+                    variant={selectedAmountPill === "other" ? "default" : "outline"}
+                    className={`h-12 text-sm font-medium ${
+                      selectedAmountPill === "other" 
+                        ? "bg-primary hover:bg-teal-700 text-white border-primary" 
+                        : "bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200"
+                    }`}
+                    onClick={handleOtherAmountClick}
+                  >
+                    Other Amount
+                  </Button>
+                </div>
+
+                {/* Custom Amount Input - Only shown when "Other Amount" is selected */}
+                <div
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                    showCustomAmount ? "max-h-20 opacity-100 mb-3" : "max-h-0 opacity-0 mb-0"
+                  }`}
+                >
+                  <div
+                    className={`transition-transform duration-500 ease-in-out ${
+                      showCustomAmount ? "translate-y-0" : "-translate-y-4"
+                    }`}
+                  >
+                    <Input
+                      type="number"
+                      placeholder="Enter custom amount (min ₹1,000)"
+                      className={`bg-gray-50 h-12 ${
+                        customAmountError ? "border-red-300 focus:border-red-500" : ""
+                      }`}
+                      value={amount}
+                      onChange={(e) => handleCustomAmountChange(e.target.value)}
+                      autoFocus={showCustomAmount}
+                      min="1000"
+                    />
+                    {/* Real-time error for custom amount */}
+                    {customAmountError && (
+                      <p className="text-red-500 text-sm mt-1 animate-fade-in">
+                        {customAmountError}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
                 {showErrors && errors.amount && (
                   <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
                 )}
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full px-4 py-1 text-sm bg-transparent"
-                    onClick={() => handleAmountSelect("5000")}
-                  >
-                    ₹5,000
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full px-4 py-1 text-sm bg-transparent"
-                    onClick={() => handleAmountSelect("10000")}
-                  >
-                    ₹10,000
-                  </Button>
-                   <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="rounded-full px-4 py-1 text-sm bg-transparent"
-                    onClick={() => handleAmountSelect("50000")}
-                  >
-                    ₹50,000
-                  </Button>
-                </div>
               </div>
 
               {/* 80G Certificate Checkbox */}
