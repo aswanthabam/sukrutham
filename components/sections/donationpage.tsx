@@ -15,6 +15,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function DonationPage() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function DonationPage() {
   const [state, setState] = useState("");
   const [country, setCountry] = useState("");
   const [pinCode, setPinCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Form validation states
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -123,8 +125,8 @@ export default function DonationPage() {
     if (wantsCertificate) {
       if (!pan.trim())
         newErrors.pan = "PAN number is required for 80G certificate";
-      else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan.toUpperCase()))
-        newErrors.pan = "Please enter a valid PAN number";
+      // else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan.toUpperCase()))
+      //   newErrors.pan = "Please enter a valid PAN number";
       if (!address.trim())
         newErrors.address = "Full address is required for 80G certificate";
       if (!city.trim()) newErrors.city = "City is required for 80G certificate";
@@ -156,6 +158,7 @@ export default function DonationPage() {
     }
 
     setShowTermsError(false);
+    setIsLoading(true);
 
     axios
       .post(`${process.env.NEXT_PUBLIC_API_URL}/api/donation/donate`, {
@@ -179,13 +182,17 @@ export default function DonationPage() {
       .then((response) => {
         if (response.data && response.data.payment_url) {
           const redirect_url = response.data.payment_url;
-          window.open(redirect_url);
+          window.location.href = redirect_url;
         } else {
-          alert("Payment failed");
+          toast.error(
+            "There was an issue with your donation. Please try again."
+          );
         }
       })
       .catch((error) => {
-        alert("An error occurred while processing your request");
+        toast.error(
+          "An error occurred while processing your request! Please try again."
+        );
       });
   };
 
@@ -756,9 +763,33 @@ export default function DonationPage() {
               {/* Donate Button */}
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-teal-700 text-white py-3 text-base font-medium"
+                disabled={isLoading}
+                className="w-full bg-primary hover:bg-teal-700 text-white py-3 text-base font-medium flex items-center justify-center"
               >
-                Donate Now
+                {isLoading ? (
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                ) : (
+                  "Donate Now"
+                )}
               </Button>
             </form>
           </div>

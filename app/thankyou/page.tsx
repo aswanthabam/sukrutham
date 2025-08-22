@@ -8,6 +8,8 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
 import axios from "axios";
+import toast from "react-hot-toast";
+
 type PaymentDetails = {
   payment_status: string;
   merchant_order_id: string;
@@ -22,6 +24,7 @@ type Donation = {
   need_g80_certificate: boolean;
   payment_details: PaymentDetails;
 };
+
 function ThankYouContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -29,6 +32,9 @@ function ThankYouContent() {
   const [copySuccess, setCopySuccess] = useState(false);
   const [donationStatus, setDonationStatus] = useState<Donation | null>(null);
   const [orderId, setOrderId] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [status, setStatus] = useState("pending");
+  const [collectedAmount, setCollectedAmount] = useState(0);
 
   useEffect(() => {
     const order_id = searchParams.get("order_id");
@@ -37,28 +43,67 @@ function ThankYouContent() {
       return;
     }
     setOrderId(order_id);
+    fetchPaymentStatus(order_id);
+    fetchCollectedAmount();
+  }, [searchParams]);
+
+  const fetchCollectedAmount = () => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/donation/total_amount`, {})
+      .then((response) => {
+        if (response.data) {
+          setCollectedAmount(
+            Math.round((response.data.total_donation_amount / 10000000) * 100) /
+              100
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching collected amount:", error);
+      });
+  };
+
+  const fetchPaymentStatus = (order_id: string) => {
+    setIsLoading(true);
     axios
       .get(
         `${process.env.NEXT_PUBLIC_API_URL}/api/donation/status/${order_id}`,
         {}
       )
       .then((response) => {
-        setDonationStatus(response.data);
+        setIsLoading(false);
+        if (response.data) {
+          setIsLoading(false);
+          setDonationStatus(response.data);
+          setStatus(response.data?.payment_details.payment_status);
+          if (response.data?.payment_details.payment_status == "completed") {
+            toast.success("Your payment is successful!");
+          } else if (
+            response.data?.payment_details.payment_status == "failed"
+          ) {
+            toast.error("Your payment has failed. Please try again.");
+          } else {
+            toast.error(
+              "There was an issue with your payment status. Please refresh the page."
+            );
+          }
+        } else {
+          toast.error(
+            "There was an issue with your payment status. Please refresh the page."
+          );
+        }
       })
       .catch((error) => {
-        alert("Error fetching donation status");
-        router.push(`/`);
+        setIsLoading(false);
+        toast.error("Error fetching your payment status please try again");
       });
-  }, [searchParams]);
+  };
 
-  const collectedAmount = 25;
   const targetAmount = 100;
 
   const copyDonationLink = async () => {
     try {
-      await navigator.clipboard.writeText(
-        "https://Donatesukruthakeralam.vercel.app"
-      );
+      await navigator.clipboard.writeText("https://donate.sukruthakeralam.com");
       setCopySuccess(true);
       // Hide success message after 3 seconds
       setTimeout(() => setCopySuccess(false), 3000);
@@ -66,7 +111,7 @@ function ThankYouContent() {
       console.error("Failed to copy link:", error);
       // Fallback for older browsers
       const textArea = document.createElement("textarea");
-      textArea.value = "https://Donatesukruthakeralam.vercel.app";
+      textArea.value = "https://donate.sukruthakeralam.com";
       document.body.appendChild(textArea);
       textArea.select();
       try {
@@ -135,7 +180,16 @@ function ThankYouContent() {
     }
   };
 
-  return (
+  return isLoading ? (
+    <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+      <div className="text-center">
+        <div className="loader mb-4"></div>
+        <div className="flex justify-center">
+          <div className="w-8 h-8 border-4 border-gray-300 border-t-teal-500 rounded-full animate-spin"></div>
+        </div>
+      </div>
+    </div>
+  ) : status == "completed" ? (
     <div className=" bg-gray-50 ">
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-6 overflow-scroll ">
         {/* certificate section */}
@@ -255,11 +309,6 @@ function ThankYouContent() {
           )}
 
           <div className="text-center text-sm text-gray-600 space-y-2">
-            <p>
-              An instant success email has been shared with you at {""} with
-              <br />
-              the reference number {donationStatus?.order_id}.
-            </p>
             {donationStatus?.need_g80_certificate && (
               <p>
                 80(G) Certificate: Your request for an 80(G) certificate has
@@ -270,6 +319,30 @@ function ThankYouContent() {
             )}
           </div>
         </div>
+      </div>
+    </div>
+  ) : (
+    <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          {status === "failed" ? "Payment Failed" : "Payment Status Pending"}
+        </h2>
+        <p className="text-gray-600 mb-4">
+          {status === "failed"
+            ? "Your payment could not be processed. Please try again."
+            : "Your payment status is still pending. Please refresh the page to check again."}
+        </p>
+        {orderId && (
+          <p className="text-gray-600 mb-4">
+            Order ID: <span className="font-semibold">{orderId}</span>
+          </p>
+        )}
+        <Button
+          onClick={() => fetchPaymentStatus(orderId)}
+          className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg font-medium"
+        >
+          Refresh
+        </Button>
       </div>
     </div>
   );
