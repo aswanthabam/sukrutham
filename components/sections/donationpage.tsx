@@ -71,7 +71,6 @@ export default function DonationPage() {
   useEffect(() => {
     const pending_order_id = localStorage.getItem("pending_order_id");
     if (pending_order_id) {
-      toast.loading("Getting details of previous transaction ...");
       setIsLoading(true);
       router.push("/thankyou?order_id=" + pending_order_id);
     }
