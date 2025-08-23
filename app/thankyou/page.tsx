@@ -82,6 +82,24 @@ function ThankYouContent() {
           setStatus(response.data?.payment_details.payment_status);
           if (response.data?.payment_details.payment_status == "completed") {
             toast.success("Your payment is successful!");
+            const completedOrderIds = localStorage.getItem(
+              "completed_order_ids"
+            );
+            if (completedOrderIds) {
+              const ids = JSON.parse(completedOrderIds);
+              if (!ids.includes(response.data.merchant_order_id)) {
+                ids.push(response.data.merchant_order_id);
+                localStorage.setItem(
+                  "completed_order_ids",
+                  JSON.stringify(ids)
+                );
+              }
+            } else {
+              localStorage.setItem(
+                "completed_order_ids",
+                JSON.stringify([response.data.merchant_order_id])
+              );
+            }
           } else if (
             response.data?.payment_details.payment_status == "failed"
           ) {
