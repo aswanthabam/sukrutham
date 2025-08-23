@@ -86,6 +86,7 @@ function ThankYouContent() {
           ) {
             toast.error("Your payment has failed. Please try again.");
           } else {
+            localStorage.setItem("pending_order_id", order_id);
             toast.error(
               "There was an issue with your payment status. Please refresh the page."
             );
@@ -97,6 +98,7 @@ function ThankYouContent() {
         }
       })
       .catch((error) => {
+        localStorage.setItem("pending_order_id", order_id);
         setIsLoading(false);
         toast.error("Error fetching your payment status please try again");
       });
