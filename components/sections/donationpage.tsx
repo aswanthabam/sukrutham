@@ -72,6 +72,12 @@ export default function DonationPage() {
     const pending_order_id = localStorage.getItem("pending_order_id");
     if (pending_order_id) {
       setIsLoading(true);
+      toast.loading(
+        "Previous pending transactions found, redirecting to status page ..."
+      );
+      setTimeout(() => {
+        toast.dismiss();
+      }, 2000);
       router.push("/thankyou?order_id=" + pending_order_id);
     }
   }, []);
