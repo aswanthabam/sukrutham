@@ -35,6 +35,7 @@ function ThankYouContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState("pending");
   const [collectedAmount, setCollectedAmount] = useState(0);
+  const [paymentUrl, setPaymentUrl] = useState("");
 
   useEffect(() => {
     const order_id = searchParams.get("order_id");
@@ -86,6 +87,8 @@ function ThankYouContent() {
           ) {
             toast.error("Your payment has failed. Please try again.");
           } else {
+            if (response.data?.payment_details.is_payment_url_expired == false)
+              setPaymentUrl(response.data?.payment_details.payment_url);
             localStorage.setItem("pending_order_id", order_id);
             toast.error(
               "There was an issue with your payment status. Please refresh the page."
@@ -348,6 +351,18 @@ function ThankYouContent() {
         >
           Refresh
         </Button>
+        {paymentUrl && (
+          <div className="flex flex-col items-center gap-4 mt-5">
+            <p>
+              <a
+                href={paymentUrl}
+                className="underline text-blue-400 cursor-pointer"
+              >
+                Go back to payment page
+              </a>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
