@@ -1,0 +1,85 @@
+name: Development Frontend Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_code:
+        description: "Sync frontend code to server"
+        required: true
+        default: false
+        type: boolean
+      sync_env:
+        description: "Sync environment variables"
+        required: true
+        default: false
+        type: boolean
+      build:
+        description: "Build frontend service"
+        required: false
+        default: false
+        type: boolean
+      restart_frontend:
+        description: "Restart frontend service"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: "docker-compose.yml"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+
+      - name: Deploy Frontend
+        env:
+          REMOTE_IP: ${{ secrets.DEV_REMOTE_IP }}
+          USER: ${{ secrets.DEV_REMOTE_USER }}
+          PROJECT_PATH: ${{ secrets.DEV_PROJECT_PATH }}
+          ENV_VARS: ${{ secrets.DEV_ENV_VARIABLES }}
+          SYNC_CODE: ${{ github.event.inputs.sync_code }}
+          SYNC_ENV: ${{ github.event.inputs.sync_env }}
+          BUILD_FRONTEND: ${{ github.event.inputs.build }}
+          RESTART_FRONTEND: ${{ github.event.inputs.restart_frontend }}
+        run: |
+          # Step 1: Sync code if selected
+          if [ "$SYNC_CODE" = "true" ]; then
+            echo "Syncing frontend code to server..."
+            rsync -avz --delete \
+              --exclude='.git/' \
+              --exclude='.github/' \
+              --exclude='node_modules/' \
+              --exclude='.env' \
+              -e "ssh -o StrictHostKeyChecking=no" ./ $USER@$REMOTE_IP:$PROJECT_PATH --rsync-path="sudo rsync"
+          fi
+
+          # Step 2: Run deployment commands on remote server
+          ssh -o StrictHostKeyChecking=no $USER@$REMOTE_IP <<EOF
+          cd $PROJECT_PATH
+
+
+          if [ "$SYNC_ENV" = "true" ]; then
+            echo "Syncing environment variables..."
+            printf "%s" "$ENV_VARS" | sudo tee .env > /dev/null
+          fi
+
+          if [ "$BUILD_FRONTEND" = "true" ]; then
+            echo "Building frontend service..."
+            sudo docker-compose -f $COMPOSE_FILE build nextjs
+          fi
+
+          if [ "$RESTART_FRONTEND" = "true" ]; then
+            echo "Restarting frontend service..."
+            sudo docker-compose -f $COMPOSE_FILE stop nextjs
+            sudo docker-compose -f $COMPOSE_FILE up -d nextjs
+          fi
+
+          EOF
