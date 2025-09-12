@@ -194,13 +194,39 @@ export default function DonationPage() {
           : null,
       })
       .then((response) => {
-        if (response.data && response.data.payment_url) {
-          localStorage.setItem(
-            "pending_order_id",
-            response.data.merchant_order_id
-          );
-          const redirect_url = response.data.payment_url;
-          window.location.href = redirect_url;
+        if (response.data) {
+          if (response.data.gateway == "sbiepay") {
+            localStorage.setItem(
+              "pending_order_id",
+              response.data.merchant_order_id
+            );
+
+            const form = document.createElement("form");
+            form.method = "post";
+            form.action = response.data.gateway_url;
+
+            const hiddenField = document.createElement("input");
+            hiddenField.type = "hidden";
+            hiddenField.name = "EncryptTrans";
+            hiddenField.value = response.data.payment_form_data.EncryptTrans;
+            form.appendChild(hiddenField);
+            const hiddenField2 = document.createElement("input");
+            hiddenField2.type = "hidden";
+            hiddenField2.name = "merchIdVal";
+            hiddenField2.value = response.data.payment_form_data.merchIdVal;
+            form.appendChild(hiddenField2);
+
+            // Append the form to the body and submit it
+            document.body.appendChild(form);
+            form.submit();
+          } else if (response.data.gateway == "phonepe") {
+            localStorage.setItem(
+              "pending_order_id",
+              response.data.merchant_order_id
+            );
+            const redirect_url = response.data.payment_url;
+            window.location.href = redirect_url;
+          }
         } else {
           setIsLoading(false);
           toast.error(
