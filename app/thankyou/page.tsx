@@ -232,7 +232,7 @@ function ThankYouContent() {
         </div>
       </div>
     </div>
-  ) : status == "completed" ? (
+  ) : status == "completed" || status == "success" ? (
     <div className=" bg-gray-50 ">
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-6 overflow-scroll ">
         {/* certificate section */}
