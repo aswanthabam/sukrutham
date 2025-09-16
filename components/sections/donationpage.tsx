@@ -118,16 +118,21 @@ export default function DonationPage() {
 
     // Required fields validation
     if (!fullName.trim()) newErrors.fullName = "Full name is required";
+    else if (!/^[A-Za-z][A-Za-z .'-]*[A-Za-z]$/.test(fullName))
+      newErrors.fullName =
+        "Please enter a valid full name. It should start and end with a letter and can contain spaces, periods, apostrophes, or hyphens.";
     // if (!email.trim()) newErrors.email = "Email is required";
-    else if (email && !/\S+@\S+\.\S+/.test(email))
+    if (email && !/\S+@\S+\.\S+/.test(email))
       newErrors.email = "Please enter a valid email";
     if (!contact.trim()) newErrors.contact = "Contact number is required";
     else {
       // Remove spaces and hyphens for validation
       const cleanContact = contact.replace(/[\s\-]/g, "");
       // Basic validation - should be digits and reasonable length
-      if (!/^\d{7,15}$/.test(cleanContact)) {
+      if (!/^\+?[0-9]{1,4}[0-9]{5,14}$/.test(cleanContact)) {
         newErrors.contact = "Please enter a valid contact number (7-15 digits)";
+      } else {
+        setContact(cleanContact); // Update contact to cleaned version
       }
     }
     if (!amount || parseFloat(amount) <= 0)
@@ -139,15 +144,27 @@ export default function DonationPage() {
     if (wantsCertificate) {
       if (!pan.trim())
         newErrors.pan = "PAN number is required for 80G certificate";
-      // else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan.toUpperCase()))
-      //   newErrors.pan = "Please enter a valid PAN number";
+      else if (!/^[A-Za-z0-9]+$/.test(pan.toUpperCase()))
+        newErrors.pan = "Please enter a valid PAN number";
       if (!address.trim())
         newErrors.address = "Full address is required for 80G certificate";
+      else if (!/^[a-zA-Z0-9\s.,'#/-]+$/.test(address))
+        newErrors.address =
+          "Please enter a valid address. The address should only contain letters, numbers, spaces, and common punctuation like commas, periods, and hyphens";
       if (!city.trim()) newErrors.city = "City is required for 80G certificate";
+      else if (!/^[A-Za-z\s-]+$/.test(city))
+        newErrors.city =
+          "Please enter a valid city name. It should only contain letters, spaces, and hyphens.";
       if (!state.trim())
         newErrors.state = "State is required for 80G certificate";
+      else if (!/^[A-Za-z\s-]+$/.test(state))
+        newErrors.state =
+          "Please enter a valid state name. It should only contain letters, spaces, and hyphens.";
       if (!country.trim())
         newErrors.country = "Country is required for 80G certificate";
+      else if (!/^[A-Za-z\s-]+$/.test(country))
+        newErrors.country =
+          "Please enter a valid country name. It should only contain letters, spaces, and hyphens.";
       if (!pinCode.trim())
         newErrors.pinCode = "PIN code is required for 80G certificate";
       else if (!/^\d{6}$/.test(pinCode))
