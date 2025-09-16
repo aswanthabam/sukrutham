@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   async headers() {
     const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
     const SBI_EPAY_URL = process.env.NEXT_PUBLIC_SBI_EPAY_URL;
