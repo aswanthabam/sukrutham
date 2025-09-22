@@ -34,7 +34,6 @@ export function middleware(request: NextRequest) {
     "Content-Security-Policy",
     contentSecurityPolicyHeaderValue
   );
-  requestHeaders.set("X-Frame-Options", "DENY");
 
   const response = NextResponse.next({
     request: {
@@ -45,6 +44,7 @@ export function middleware(request: NextRequest) {
     "Content-Security-Policy",
     contentSecurityPolicyHeaderValue
   );
+  response.headers.set("X-Frame-Options", "DENY");
 
   return response;
 }
