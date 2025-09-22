@@ -13,8 +13,8 @@ export function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const cspHeader = `
               default-src 'self';
-              script-src 'self' 'nonce-${nonce}' 'unsafe-inline';
-              style-src 'self' 'nonce-${nonce}' 'unsafe-inline';
+              script-src 'self' 'unsafe-inline';
+              style-src 'self' 'unsafe-inline';
               img-src 'self' data: https:;
               font-src 'self' https://fonts.gstatic.com;
               connect-src 'self' ${API_BASE_URL};
