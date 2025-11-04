@@ -770,7 +770,7 @@ export default function DonationPage() {
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-teal-600"
                   />
                   <label htmlFor="terms" className="text-sm">
-                    Confirming{" "}
+                    I hereby accepting{" "}
                     <Link 
                       href="/terms-and-conditions" 
                       className="text-primary underline hover:text-teal-700"
