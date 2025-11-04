@@ -15,7 +15,7 @@ const Navbar = () => {
           />
         </Link>
         <a
-          href="/"
+          href="https://sukruthakeralam.com"
           className="text-sm text-muted-foreground hover:text-foreground"
         >
           Main Site
