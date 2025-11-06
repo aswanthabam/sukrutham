@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
               connect-src 'self' ${API_BASE_URL};
               frame-ancestors 'none';
               base-uri 'self';
-              form-action 'self' ${SBI_EPAY_URL};
+              form-action 'self' ${SBI_EPAY_URL} https://test.sbiepay.sbi;
             `.replace(/\s{2,}/g, " ");
   // Replace newline characters and spaces
   const contentSecurityPolicyHeaderValue = cspHeader
