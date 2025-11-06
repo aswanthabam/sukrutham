@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -816,7 +817,7 @@ export default function DonationPage() {
               </div> */}
 
               {/* Terms & Conditions Checkbox */}
-              <div className="space-y-2">
+ <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="terms"
@@ -828,14 +829,21 @@ export default function DonationPage() {
                     className="data-[state=checked]:bg-primary data-[state=checked]:border-teal-600"
                   />
                   <label htmlFor="terms" className="text-sm">
-                    Confirming Terms & Conditions{" "}
+                    I hereby accepting{" "}
+                    <Link 
+                      href="/terms-and-conditions" 
+                      className="text-primary underline hover:text-teal-700"
+                      target="_blank"
+                    >
+                      Terms & Conditions
+                    </Link>{" "}
                     <span className="text-red-500">*</span>
                   </label>
                 </div>
                 {(showTermsError || (showErrors && errors.terms)) && (
                   <p className="text-red-500 text-sm">
                     {errors.terms ||
-                      "Please accept the Terms & Conditions to proceed."}
+                      "I hereby accepting the terms and conditions"}
                   </p>
                 )}
               </div>
