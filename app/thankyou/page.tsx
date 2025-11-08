@@ -271,7 +271,7 @@ function ThankYouContent() {
               </div>
               <div className="flex justify-between items-center py-2">
                 <span className="text-gray-600 font-medium">
-                  Payment Method:
+                  Payment Amount:
                 </span>
                 <span className="text-gray-900 font-semibold">
                   {donationStatus?.amount}
