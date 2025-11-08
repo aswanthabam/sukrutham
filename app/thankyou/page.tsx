@@ -240,7 +240,7 @@ function ThankYouContent() {
           <div ref={certificateRef} className="p-8">
             <div className="flex justify-center mb-1">
               <Image
-                src="/images/Diversity Team Illustration.avif"
+                src="/images/thankyouimage.avif"
                 alt="Community celebration"
                 width={300}
                 height={200}
