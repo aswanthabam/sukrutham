@@ -240,7 +240,7 @@ function ThankYouContent() {
           <div ref={certificateRef} className="p-8">
             <div className="flex justify-center mb-1">
               <Image
-                src="/images/Diversity Team Illustration.avif"
+                src="/images/thankyouimage.avif"
                 alt="Community celebration"
                 width={300}
                 height={200}
@@ -271,7 +271,7 @@ function ThankYouContent() {
               </div>
               <div className="flex justify-between items-center py-2">
                 <span className="text-gray-600 font-medium">
-                  Payment Method:
+                  Payment Amount:
                 </span>
                 <span className="text-gray-900 font-semibold">
                   {donationStatus?.amount}
