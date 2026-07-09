@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+// import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
@@ -35,7 +35,7 @@ function ThankYouContent() {
   const [orderId, setOrderId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState("pending");
-  const [collectedAmount, setCollectedAmount] = useState(0);
+  // const [collectedAmount, setCollectedAmount] = useState(0);
   // const [paymentUrl, setPaymentUrl] = useState("");
 
   useEffect(() => {
@@ -53,24 +53,24 @@ function ThankYouContent() {
     }
     setOrderId(order_id);
     fetchPaymentStatus(order_id);
-    fetchCollectedAmount();
+    // fetchCollectedAmount();
   }, [searchParams]);
 
-  const fetchCollectedAmount = () => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/api/donation/total_amount`, {})
-      .then((response) => {
-        if (response.data) {
-          setCollectedAmount(
-            Math.round((response.data.total_donation_amount / 10000000) * 100) /
-              100
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching collected amount:", error);
-      });
-  };
+  // const fetchCollectedAmount = () => {
+  //   axios
+  //     .get(`${process.env.NEXT_PUBLIC_API_URL}/api/donation/total_amount`, {})
+  //     .then((response) => {
+  //       if (response.data) {
+  //         setCollectedAmount(
+  //           Math.round((response.data.total_donation_amount / 10000000) * 100) /
+  //             100
+  //         );
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching collected amount:", error);
+  //     });
+  // };
 
   const fetchPaymentStatus = (order_id: string) => {
     setIsLoading(true);
@@ -289,7 +289,7 @@ function ThankYouContent() {
           </div>
           {/* certificate end */}
 
-          <div className="mb-8">
+          {/* <div className="mb-8">
             <div className="border border-gray-200 rounded-lg p-6">
               <h3 className="text-gray-900 font-semibold mb-4">
                 Donation Progress So Far
@@ -309,7 +309,7 @@ function ThankYouContent() {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="flex gap-4 mb-8">
             <Button
